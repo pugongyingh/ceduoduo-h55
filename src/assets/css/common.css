@@ -1,0 +1,67 @@
+.nowrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nowrap_2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+}
+.nowrap_3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:3;
+}
+.nowrap_4 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:4;
+}
+.nowrap_5 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:5;
+}
+
+.shadowBox {
+  box-shadow:2px 2px 1px 1px rgba(243,243,243,1),-2px 0px 1px 1px rgba(243,243,243,1) ;
+;
+}
+
+.fake {
+  height: 46px;
+  width: 100%;
+}
+
+.fixTop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+/*公共样式*/
+
+/*边距的故事*/
+.mgt20 {
+  margin-top: 20px;
+}
+.pdt20 {
+  padding-top: 20px;
+}
+
+/*首页宝贝条件筛选选中样式*/
+.mainActive {
+  background:rgba(237,0,26,1);
+  color:rgba(255,255,255,1);
+}
