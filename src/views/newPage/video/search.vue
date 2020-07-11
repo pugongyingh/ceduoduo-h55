@@ -8,40 +8,27 @@
         background="#FAFAFA"
         placeholder="请输入搜索关键词"
         @search="search"
+        @input="search"
       />
     </div>
-    <div v-if="!hasSearch" style="text-align: center; font-size: 0.7rem; color: #999; margin-top: 1rem;">输入关键词进行搜索</div>
-    <template v-else>
-      <van-list
-        v-model="loading"
-        :finished="finished"
-        finished-text="已经到底了~"
-        @load="onLoad"
-      >
-        <div class="temp-wrap">
-          <div class="temp-item" v-for="item in result" :key="item.id" @click="toTemplate(item.id)">
-            <div class="temp-img"><img :src="item.cover ? item.cover : undefined" alt=""></div>
-            <div class="temp-title">{{item.name}}</div>
-          </div>
-        </div>
-      </van-list>
-    </template>
+    <div class="video-wrap">
+      <div class="video-item" v-for="item in result" :key="item.id" @click="toAlbumDetail(item)">
+        <div class="video-img"><img :src="item.logo ? item.logo : undefined" alt=""></div>
+        <div class="video-title">{{item.name}}</div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-  import {searchTemplate} from '@/services/template'
+  import {search} from '@/services/platformProduct'
 
   export default {
-    name: "tempDetail",
+    name: "searchVideo",
     data() {
       return {
         keyWord: '',
-        result: [],
-        loading: false,
-        finished: false,
-        hasSearch: false,
-        page: 0
+        result: []
       }
     },
     mounted() {
@@ -49,39 +36,31 @@
     },
     methods: {
       search() {
-        this.result = [];
-        this.page = 0;
-        this.hasSearch = true;
-        this.finished = false;
-      },
-      onLoad() {
-        this.page += 1;
         let param =  {
-          template: {
-            name: this.keyWord
+          "platformProduct": {
+            "name": this.keyWord
           },
-          pageable: {
-            page: this.page,
-            size: 9,
-            sort: {
-              asc: ["orderNumber", "id"]
+          "pageable": {
+            "page": 1,
+            "size": 10,
+            "sort": {
+              "desc": [
+                "id"
+              ]
             }
           }
         };
-        searchTemplate(param, res => {
-          this.result = this.result.length === 0 ? this.result = res : this.result.concat(res);
-
-          this.loading = false;
-          if(res.length < 9) {
-            this.finished = true;
-          }
-        });
+        search(param, res => {
+          this.result = res;
+          console.log(res)
+        })
       },
-      toTemplate(tempId) {
+      toAlbumDetail(item) {
         this.$router.push({
-          name: 'tempDetail',
-          query: {
-            tempId: tempId
+          name: 'albumDetail',
+          params: {
+            good: item,
+            picList:item.covers.split(";")
           }
         })
       }
@@ -116,23 +95,23 @@
         height: 0.78rem;
       }
     }
-    .temp-wrap {
+    .video-wrap {
       text-align: center;
       display: flex;
       flex-flow: row wrap;
       justify-content: flex-start;
-      .temp-item {
+      .video-item {
         flex: 0 0 33.33%;
         margin: 0.3rem 0 0.3rem;
         width: 33.33%;
-        .temp-img {
+        .video-img {
           img {
             width: 4.2rem;
             height: 5.36rem;
             object-fit: contain;
           }
         }
-        .temp-title {
+        .video-title {
           text-align: center;
           font-size:0.52rem;
           font-weight:bold;

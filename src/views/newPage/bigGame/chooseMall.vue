@@ -8,7 +8,7 @@
       <form action="/">
         <van-search
           v-model="value"
-          :left-icon="require('../../../assets/images/搜索.png')"
+          :left-icon="require('../../../assets/images/sousuo.png')"
           clearable
           placeholder="选择参赛店铺"
           @search="onSearch"

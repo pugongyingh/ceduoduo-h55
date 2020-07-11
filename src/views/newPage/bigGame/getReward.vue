@@ -6,26 +6,26 @@
       @click-left="$router.go(-1)"
     />
     <div class="rewardBody">
-      <div class="rewardList" v-for="item in 2">
+      <div class="rewardList" v-for="(item, index) in rewardDegree" :key='index'>
         <div class="top">
           <span></span>
-          <div class="t_r">一等奖</div>
+          <div class="t_r">{{item.degree | updateDegreeText}}</div>
           <span></span>
         </div>
         <div class="contain">
-          <div class="rewWarder" v-for="item in 2">
+          <div class="rewWarder" v-for="(item1, index1) in item.contestAlbumUserShopDTOList" :key='index1'>
             <div class="img">
-              <img src="../../../assets/newImages/daka.jpg" alt="">
+              <img :src="item1.albumCover" alt="">
             </div>
             <div class="info">
-              <span>用户名称aaa</span>
-              <span>编号1111111</span>
+              <span>{{item1.userName}}</span>
+              <span>编号{{item1.albumId}}</span>
               <div class="name">
-                <img src="../../../assets/newImages/logo.png" alt="">
-                <span>店铺名称</span>
+                <img :src="item1.storeCover" alt="">
+                <span>{{item1.shopName}}</span>
               </div>
               <div class="vote">
-                <span>999999票</span>
+                <span>{{item1.voteQuatity}}票</span>
               </div>
             </div>
           </div>
@@ -36,16 +36,49 @@
 </template>
 
 <script>
-    export default {
-        name: "getReward"
+  import { findByContestIdAndRewardDegreeIsNotNull } from '@/services/contestAlbum.js'
+  export default {
+    name: "getReward",
+    data() {
+      return {
+        contestId: 0,
+        // 获奖名单数组对象
+        rewardDegree: []
+      }
+    },
+    created() {
+      this.contestId = this.$route.params.id
+      this.getRewardData(this.contestId)
+    },
+    methods: {
+      // 获取获奖名单数据
+      getRewardData(id) {
+        findByContestIdAndRewardDegreeIsNotNull({contestId: id}, res => {
+          this.rewardDegree = res
+        })
+      }
+    },
+    filters: {
+      updateDegreeText(val) {
+        switch(val) {
+          case '1':
+            return '一等奖'
+            break
+          case '2':
+            return '二等奖'
+            break
+          case '3':
+            return '三等奖'
+            break
+        }
+      }
     }
+  }
 </script>
 
 <style lang="less" scoped>
 .getReward {
-
   .rewardBody {
-
     .rewardList {
       display: flex;
       justify-content: center;
@@ -90,12 +123,13 @@
           border-radius:0.16rem;
           display: inline-block;
           .img {
-            width:6.8rem;
-            height:9rem;
+            width: 6.8rem;
+            height: 9rem;
             img {
               width:6.8rem;
               height:9rem;
               border-radius:8px 8px 0px 0px;
+              object-fit: cover;
             }
           }
           .info {

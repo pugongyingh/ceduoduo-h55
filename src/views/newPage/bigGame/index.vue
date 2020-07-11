@@ -17,14 +17,14 @@
         <div class="middle">
           <div class="first">
             <img src="../../../assets/newImages/baoming.png" alt="">
-            <span v-if='contestDetailData.phase === "已结束"' @click="$router.push('/getReward')">获奖名单</span>
+            <span v-if='contestDetailData.phase === "已结束"' @click="$router.push('/getReward/' + contestId)">获奖名单</span>
             <span v-else @click="$router.push({path: '/signIn', query: {storeId, contestId}})">报名参赛</span>
           </div>
           <div class="first" @click="$router.push('/gameDetail/' + contestId)">
             <img src="../../../assets/newImages/saishi.png" alt="">
             <span>赛事详情</span>
           </div>
-          <div class="first" @click="$router.push('/rankList')">
+          <div class="first" @click="$router.push('/rankList/' + contestId)">
             <img src="../../../assets/newImages/paihangbang.png" alt="">
             <span>排行榜</span>
           </div>
@@ -78,21 +78,43 @@
             </div>
           </div>
         </div>
+        <!-- 比赛已结束 -->
         <div class="count" v-else>
           <div class="title">
             <p></p>
-            <div class="text">比赛倒计时</div>
-            <div class="time">
-              <span>00</span>
-              <span>:</span>
-              <span>00</span>
-              <span>:</span>
-              <span>00</span>
-              <span>:</span>
-              <span>00</span>
-            </div>
-            <div class="text">后结束</div>
+            <div class="text">比赛已结束</div>
             <p></p>
+          </div>
+          <div class="choose" @click='handleChoose'>
+            <van-field
+              v-model="showarea"
+              label="选择店铺"
+              right-icon="arrow"
+              placeholder="请选择"
+              input-align="right"
+              :readonly="true"
+              @focus="handleChoose"
+            />
+          </div>
+          <div class="hadChoosen">
+            <div class="list">
+              <div class="top">
+                <van-swipe class="my-swipe" :autoplay="2000" indicator-color="white">
+                  <van-swipe-item v-for='(item, index) in storeBanner' :key='index'>
+                    <img :src="item" alt="">
+                  </van-swipe-item>
+                </van-swipe>
+              </div>
+              <div class="bottom">
+                <div class="left">
+                  <img :src="defaultStore.cover" alt="">
+                </div>
+                <div class="middle2">
+                  <div class="title">{{defaultStore.name}}</div>
+                  <div class="brand">社群：{{defaultStore.allianceName}}</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <!-- 参赛作品搜索框 -->
@@ -120,7 +142,7 @@
             </div>
             <div class="vote">
               <span>票数：{{item.voteQuatity}}票</span>
-              <div class="voteBtn">投票</div>
+              <div class="voteBtn" @click='handleVote(item.contestAlbumId)'>投票</div>
             </div>
           </div>
         </div>
@@ -133,6 +155,7 @@
   import { getById } from '@/services/contest.js'
   import { findByContestIdAndStoreId } from '@/services/contestAlbum.js'
   import { findParentStoreWithUserId, findDetailById } from '@/services/store.js'
+  import { saveByContestAlbumIdWithUserId } from '@/services/votesCache.js'
   export default {
     name: "bigGame",
     data() {
@@ -149,7 +172,6 @@
         albumData: [],
         // 比赛结束时间(Long)
         endAt: '',
-        time: 0,
         day: 0,
         hour: 0,
         minute: 0,
@@ -157,7 +179,8 @@
         // 默认关联店铺数据
         defaultStore: {},
         // 默认关联店铺banner图
-        storeBanner: []
+        storeBanner: [],
+        interval: null
       }
     },
     methods: {
@@ -170,14 +193,14 @@
           // 获取比赛结束时间
           this.endAt = res.endAt
           this.contestDetailData = res
-          // 如果还没结束则开始倒计时
-          if (res.phase !== '已结束') {
-            this.getTime()
-          }
         })
       },
       onSearch() {
-        findByContestIdAndStoreId({contestId: this.contestId, keyWord: this.value}, res => {
+        findByContestIdAndStoreId({
+          contestId: this.contestId, 
+          keyWord: this.value,
+          storeId: this.storeId
+          }, res => {
           this.albumData = res
         })
       },
@@ -201,6 +224,9 @@
       },
       // 获取时间各个变量
       getTime() {
+        if (this.contestDetailData.phase === "已结束") {
+          clearInterval(this.interval)
+        }
         let now = new Date(Date.now()).getTime()
         // 时间差值(剩余时间)
         let surplusTime = new Date(this.endAt).getTime() - now
@@ -217,12 +243,22 @@
           this.showarea = res.name
           // 店铺id
           this.storeId = res.id
+          // 获取参赛作品
+          this.getAlbum(this.contestId)
+        })
+      },
+      // 投票
+      handleVote(id) {
+        saveByContestAlbumIdWithUserId({contestAlbumId: id}, res => {
+          this.$toast('投票成功')
+          // 刷新数据
+          this.getAlbum(this.contestId)
         })
       }
     },
     created() {
       // 定时器
-      setInterval(() => {
+      this.interval = setInterval(() => {
         this.getTime()
       }, 1000)
 
@@ -302,8 +338,9 @@
           justify-content: center;
           align-items: center;
           p {
-            width:0.44rem;
-            height:0.08rem;
+            width: 0.44rem;
+            height: 0.08rem;
+            margin: 0 0.2rem;
             background:rgba(237,0,26,1);
             display: inline-block;
           }

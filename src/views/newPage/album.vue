@@ -9,7 +9,7 @@
     </div>
 <!--    电子相册-->
     <div class="albumClass" v-if="activeIndex===0">
-      <van-search v-model="value" placeholder="记录每个人的故事" @focus="viewSearch"/>
+      <van-search v-model="value" placeholder="记录每个人的故事" shape="round" @focus="viewSearch"/>
       <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
         <van-swipe-item v-for="item in bannerList">
           <img :src="item" alt="">
@@ -48,18 +48,15 @@
 
 <!--影像制品-->
     <div class="videoClass" v-if="activeIndex===1">
-      <van-search v-model="value" placeholder="记录每个人的故事"/>
+      <van-search v-model="value" placeholder="记录每个人的故事" @focus="videoSearch"/>
       <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
-        <van-swipe-item>
-          <img src="../../assets/images/ceshi.jpg" alt="">
-        </van-swipe-item>
-        <van-swipe-item>
-          <img src="../../assets/images/bg.jpg" alt="">
+        <van-swipe-item v-for="bannerImg in banner">
+          <img :src="bannerImg.advertisementImage" :alt="bannerImg.title">
         </van-swipe-item>
       </van-swipe>
 <!--      方相册选择-->
       <div class="albumNav">
-        <div class="item" v-for="item in sortList" @click="toAlbumDetail1(item.id)">
+        <div class="item" v-for="item in sortList" @click="toStoreProductDetail1(item.id)">
           <img :src="item.icon" alt="">
           <p>{{item.name}}</p>
         </div>
@@ -72,13 +69,31 @@
       <div class="seckill" v-for="itemType in productSortList">
         <p class="title">{{itemType.type}}</p>
         <div class="shopList">
-          <div class="item" @click="toAlbumDetail2(item.id)" v-for="item in itemType.platformProductGoodsDTO">
+          <div class="item" @click="toPlatformProductDetail(item.id)" v-for="item in itemType.platformProductGoodsDTO">
             <div class="imgBox">
               <img :src="item.covers" alt="">
             </div>
-            <p>
-              <span class="sp1">￥{{item.salePrice}}</span>
-              <span class="sp2">￥{{item.originalPrice}}</span>
+            <p class="name">{{item.name}}</p>
+            <p class="price">
+              <span><span class="sp1">￥{{item.salePrice}}</span>
+              <span class="sp2">￥{{item.originalPrice}}</span></span>
+              <span class="sp3">已售{{item.soldQuantity}}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="seckill">
+        <p class="title">精品推荐</p>
+        <div class="shopList">
+          <div class="item" @click="toPlatformProductDetail(item.id)" v-for="item in boutiqueList">
+            <div class="imgBox">
+              <img :src="item.covers" alt="">
+            </div>
+            <p class="name">{{item.name}}</p>
+            <p class="price">
+              <span><span class="sp1">￥{{item.salePrice}}</span>
+              <span class="sp2">￥{{item.originalPrice}}</span></span>
+              <span class="sp3">已售{{item.soldQuantity}}</span>
             </p>
           </div>
         </div>
@@ -99,40 +114,39 @@
 <!--        </div>-->
 <!--      </div>-->
 <!--      方相册专区-->
-      <div class="prefecture">
-        <p class="title">方相册专区</p>
-        <div class="bg">
-          <img src="../../assets/images/bg.jpg" alt="">
-        </div>
-        <div class="shopList">
-          <div class="item" v-for="i in 4">
-            <img src="../../assets/images/ceshi.jpg" alt="">
-            <p class="title">皮质方相册粉</p>
-            <p class="price">￥128</p>
-          </div>
-        </div>
-      </div>
-<!--      方相册展示-->
-      <div class="bigShopList mgt20">
-        <div class="bigList pdt20" v-for="item in 4">
-          <img src="../../assets/images/ceshi.jpg" alt="">
-          <p>皮质方相册粉</p>
-          <div>
-            <span class="price">￥128</span>
-            <span class="paid">2人付款</span>
-          </div>
-        </div>
-      </div>
+<!--      <div class="prefecture">-->
+<!--        <p class="title">方相册专区</p>-->
+<!--        <div class="bg">-->
+<!--          <img src="../../assets/images/bg.jpg" alt="">-->
+<!--        </div>-->
+<!--        <div class="shopList">-->
+<!--          <div class="item" v-for="i in 4">-->
+<!--            <img src="../../assets/images/ceshi.jpg" alt="">-->
+<!--            <p class="title">皮质方相册粉</p>-->
+<!--            <p class="price">￥128</p>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--&lt;!&ndash;      方相册展示&ndash;&gt;-->
+<!--      <div class="bigShopList mgt20">-->
+<!--        <div class="bigList pdt20" v-for="item in 4">-->
+<!--          <img src="../../assets/images/ceshi.jpg" alt="">-->
+<!--          <p>皮质方相册粉</p>-->
+<!--          <div>-->
+<!--            <span class="price">￥128</span>-->
+<!--            <span class="paid">2人付款</span>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
 
     </div>
   </div>
 </template>
 
 <script>
-  import {search,findHomePageNew} from '@/services/templateCategory'
-  import {findIconAndId} from '@/services/platformProduct'
+  import {searchTemplateCategory,findHomePageNew} from '@/services/templateCategory'
+  import {findIconAndId,get,findHomeBoutiqueProduct} from '@/services/platformProduct'
   import {findHotCategoryTemplate} from '@/services/template'
-  import {get} from '@/services/platformProduct'
   import {getStoreProduct} from '@/services/storeProduct'
   import {findByAdvertisementLocation} from '@/services/article'
 
@@ -142,10 +156,12 @@
         activeIndex: 0,
         navList: ['电子相册', '影像制品'],
         value:'',
+        banner:[],
         tempList: [],
         hotList: [],
         sortList:[],
         productSortList:[],
+        boutiqueList:[],
         bannerList: []
       }
     },
@@ -164,7 +180,7 @@
             }
           }
         };
-        search(tempParam, res => {
+        searchTemplateCategory(tempParam, res => {
           this.tempList = res.slice(0, 4);
         })
         let hotParam = {
@@ -201,30 +217,28 @@
           }
         })
       },
-      //打开搜索界面
       viewSearch() {
         this.$router.push('/albumTempSearch')
       },
-      toAlbumDetail1(id){
-        getStoreProduct({id},res=>{
-          this.$router.push({
-            name: 'albumDetail',
-            params: {
-              good:res,
-              picList:res.covers.split(";")
-            }
-          })
+      videoSearch() {
+        this.$router.push('/videoSearch')
+      },
+      toStoreProductDetail1(id){
+        this.$router.push({
+          name: 'albumDetail',
+          query: {
+            goodId:id,
+            url:'getStoreProduct'
+          }
         })
       },
-      toAlbumDetail2(id){
-        get({id},res=>{
-          this.$router.push({
-            name: 'albumDetail',
-            params: {
-              good:res,
-              picList:res.covers.split(";")
-            }
-          })
+      toPlatformProductDetail(id){
+        this.$router.push({
+          name: 'albumDetail',
+          query: {
+            goodId:id,
+            url:'get'
+          }
         })
       },
       toAlbumMore(){
@@ -234,7 +248,7 @@
         })
       }
     },
-    mounted() {
+    created() {
       let that = this
       this.searchTemp()
       findIconAndId({},function (res) {
@@ -243,6 +257,20 @@
       findHomePageNew({},res=> {
         that.productSortList = res.platformProductAttributeDTOList
         that.moreList = res.category
+        that.banner = res.banner
+      })
+      findHomeBoutiqueProduct({
+        "pageable": {
+          "page": 1,
+          "size": 10,
+          "sort": {
+            "desc": [
+              "id"
+            ]
+          }
+        }
+      },res=>{
+        this.boutiqueList = res
       })
 
       //拿到电子相册的轮播图
@@ -266,7 +294,7 @@
       margin-bottom: 50px;
     }
     .videoClass {
-      height: 1500px;
+      margin-bottom: 2rem;
     }
     .top {
       width: 15rem;
@@ -460,30 +488,56 @@
         margin-left: 0.64rem;
       }
       .shopList {
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;
-        justify-content: space-around;
+        width: 14.25rem;
+        margin: 0 auto;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
         .item {
-          width: 3.6rem;
+          width: 50%;
+          display: -webkit-box;
+          display: -ms-flexbox;
+          display: flex;
+          -webkit-box-orient: vertical;
+          -webkit-box-direction: normal;
+          -ms-flex-direction: column;
+          flex-direction: column;
+          -webkit-box-align: center;
+          -ms-flex-align: center;
+          align-items: center;
+          margin: 0.5rem 0;
           .imgBox {
-            width: 3.6rem;
-            height: 3.6rem;
-            padding: 10px 10px 10px 0;
+            width: 6.2rem;
+            height: 6.2rem;
+            border-top-left-radius: 0.2rem;
+            border-top-right-radius: 0.2rem;
+            -o-object-fit: cover;
+            object-fit: cover;
             img {
               width: 100%;
               height: 100%;
             }
           }
-          p {
+          .name{
+            width: 6.2rem;
+            line-height: 0.64rem;
+            font-size:0.6rem;
+            margin: 0.24rem 0 0.16rem;
+          }
+          .price {
+            width: 6.2rem;
             line-height: 0.64rem;
             overflow: hidden;
             display: flex;
-            justify-content: left;
+            justify-content: space-between;
+            align-items: flex-end;
             .sp1 {
               font-size:0.6rem;
               font-family:PingFang SC;
               font-weight:500;
               color:rgba(220,25,35,1);
-              margin-right: 0.56rem;
             }
             .sp2 {
               font-size:0.4rem;
@@ -491,6 +545,10 @@
               font-weight:400;
               text-decoration:line-through;
               color:rgba(119,119,119,1);
+            }
+            .sp3{
+              font-size: 0.18rem;
+              color: #999;
             }
           }
         }

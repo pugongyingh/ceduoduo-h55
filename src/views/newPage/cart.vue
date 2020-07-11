@@ -178,7 +178,7 @@
         this.$router.push({
           name: 'orderPage',
           params: {
-            car: this.goodlist,
+            car: this.checkGoodsList,
             totalPrice:this.totalPrice
           }
         })

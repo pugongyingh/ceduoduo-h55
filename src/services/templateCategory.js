@@ -6,6 +6,6 @@ export function findHomePageNew(param,callback) {
   return post(findHomePageNewUrl,param,callback)
 }
 
-export function search(param,callback) {
+export function searchTemplateCategory(param,callback) {
   return post(searchUrl,param,callback)
 }

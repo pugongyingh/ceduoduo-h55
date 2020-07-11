@@ -38,6 +38,14 @@ const routes = [
     component: () => import('@/views/newPage/store/shopBaby.vue')
   },
   {
+    name: 'babyDetail',
+    path: '/babyDetail',
+    meta: {
+      title: 'babyDetail',
+    },
+    component: () => import('@/views/newPage/store/babyDetail.vue')
+  },
+  {
     name: 'chattingRecords',
     path: '/chattingRecords',
     meta: {
@@ -61,14 +69,55 @@ const routes = [
     },
     component: () => import('@/views/newPage/album.vue')
   },
-  //选择模板
   {
     name: 'albumMore',
     path: '/albumMore',
     meta: {
       title: 'albumMore',
     },
-    component: () => import('@/views/newPage/albumMore.vue')
+    component: () => import('@/views/newPage/video/albumMore.vue')
+  },
+  {
+    name: 'videoOrder',
+    path: '/videoOrder',
+    meta: {
+      title: 'videoOrder',
+    },
+    component: () => import('@/views/newPage/video/order.vue'),
+    children:[
+      {
+        name: 'videoAddress',
+        path: '/videoAddress',
+        meta: {
+          title: 'videoAddress',
+        },
+        component: () => import('@/views/newPage/video/address.vue')
+      },
+      {
+        name: 'videoAddAddress',
+        path: '/videoAddAddress',
+        meta: {
+          title: 'videoAddAddress',
+        },
+        component: () => import('@/views/newPage/video/addAddress.vue')
+      },
+      {
+        name: 'chooseTemplate',
+        path: '/chooseTemplate',
+        meta: {
+          title: 'chooseTemplate',
+        },
+        component: () => import('@/views/newPage/video/chooseTemplate.vue')
+      },
+    ]
+  },
+  {
+    name: 'videoSearch',
+    path: '/videoSearch',
+    meta: {
+      title: 'videoSearch',
+    },
+    component: () => import('@/views/newPage/video/search.vue')
   },
   //相册详情
   {
@@ -77,7 +126,15 @@ const routes = [
     meta: {
       title: 'albumDetail',
     },
-    component: () => import('@/views/newPage/albumDetail.vue')
+    component: () => import('@/views/newPage/video/albumDetail.vue')
+  },
+  {
+    name: 'albumCategoryProduct',
+    path: '/albumCategoryProduct',
+    meta: {
+      title: 'albumCategoryProduct',
+    },
+    component: () => import('@/views/newPage/video/albumCategoryProduct.vue')
   },
   {
     name: 'chooseTemplate',
@@ -467,8 +524,24 @@ const routes = [
     component:() => import('@/views/newPage/bigGame/getReward.vue')
   },
   {
+    name:'getReward',
+    path:'/getReward/:id',
+    meta:{
+      title:'getReward'
+    },
+    component:() => import('@/views/newPage/bigGame/getReward.vue')
+  },
+  {
     name:'rankList',
     path:'/rankList',
+    meta:{
+      title:'rankList'
+    },
+    component:() => import('@/views/newPage/bigGame/rankList.vue')
+  },
+  {
+    name:'rankList',
+    path:'/rankList/:id',
     meta:{
       title:'rankList'
     },
@@ -650,6 +723,14 @@ const routes = [
       title:'game'
     },
     component:() => import('@/views/newPage/personal/alliance/management')
+  },
+  {
+    name:'recommendedWorks',
+    path:'/recommendedWorks/:id',
+    meta:{
+      title:'recommendedWorks'
+    },
+    component:() => import('@/views/newPage/recommendedWorks')
   }
 ]
 

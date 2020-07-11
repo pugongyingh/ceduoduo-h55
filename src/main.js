@@ -34,6 +34,7 @@ Vue.use(Vant)
 Vue.use(Lazyload)
 Vue.use(VueBetterScroll)
 Vue.prototype.$echarts = echarts;
+Vue.prototype.$eventBus = new Vue();
 
 
 

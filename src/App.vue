@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <router-view/>
+
     <my-loading v-if="loading"/>
     <van-tabbar active-color="#BD7030" inactive-color="#999999"
                 v-if="pathUrl === '/mine' || pathUrl === '/shopBaby'

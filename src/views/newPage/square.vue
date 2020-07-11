@@ -10,49 +10,38 @@
       <span v-for="(item,index) in list" @click="toggle(index)" :key="index"
             :class="index === activeIndex ? 'active' : ''">{{item}}</span>
     </div>
-
-    <div class="live" v-if="activeIndex === 2">
-      <div class="card" v-for="item in liveList">
+<!--    热门  -->
+    <div class="live" v-if="activeIndex === 0">
+      <div class="card" v-for="i in 6">
         <div class="top">
           <div class="avatar">
-            <img :src="item.storeCover" alt="">
+            <img src="../../assets/images/b_pic_statue.jpg" alt="">
           </div>
           <div class="info">
-            <p class="p1">{{item.title}}</p>
-            <p class="p2">{{item.storeAddress}}</p>
-          </div>
-          <div class="btn" @click="goLiveDetail(item.liveShowId)">
-            进入直播
+            <p class="p1">店铺名称AAA</p>
+            <p class="p2">广东广州</p>
           </div>
         </div>
-<!--        <p style="overflow: hidden">-->
-<!--          <span class="sp1">#2020最美春天</span>-->
-<!--          <span class="sp2">了解详情</span>-->
-<!--        </p>-->
+        <p style="overflow: hidden">
+          <span class="sp1">#2020最美春天</span>
+          <span class="sp2">了解详情</span>
+        </p>
         <div class="liveImg">
-          <van-image :src="imgSrc" v-for="imgSrc in item.coverList" radius="0.16rem">
-            <template v-slot:loading>
-              <van-loading type="spinner" size="20" />
-            </template>
-          </van-image>
+          <img src="../../assets/images/b_pic_statue.jpg" alt="">
+          <img src="../../assets/images/b_pic_statue.jpg" alt="">
+          <img src="../../assets/images/b_pic_statue.jpg" alt="">
         </div>
-<!--        <div class="option">-->
-<!--          <div class="item">-->
-<!--            <img src="../../assets/images/share.png" alt="">-->
-<!--            10086-->
-<!--          </div>-->
-<!--          <div class="item">-->
-<!--            <img src="../../assets/images/share.png" alt="">-->
-<!--            10086-->
-<!--          </div>-->
-<!--          <div class="item">-->
-<!--            <img src="../../assets/images/share.png" alt="">-->
-<!--            10086-->
-<!--          </div>-->
-<!--        </div>-->
+        <div class="option">
+          <div class="item">
+            <img src="../../assets/images/share.png" alt="">10086</div>
+          <div class="item">
+            <img src="../../assets/images/share.png" alt="">10086</div>
+          <div class="item">
+            <img src="../../assets/images/share.png" alt="">10086</div>
+        </div>
       </div>
     </div>
-<!--大赛-->
+<!--    大赛  -->
     <div class="game" v-if="activeIndex === 1">
       <van-pull-refresh :head-height="50" v-model="contestRefresh" @refresh="onRefreshContest">
         <van-list
@@ -63,7 +52,7 @@
           :offset="10"
           @load="onLoadContest"
         >
-          <div class="card mgt20" v-for="(i, index) in contestData" :key='index'>
+          <div class="card" v-for="(i, index) in contestData" :key='index'>
             <div class="top">
               <div class="avatar">
                 <img :src="i.storeCover" alt="">
@@ -96,46 +85,39 @@
         </van-list>
       </van-pull-refresh>
     </div>
-<!--    热门-->
-    <div class="live" v-if="activeIndex === 0">
-      <div class="card mgt20" v-for="i in 6">
+<!--    直播  -->
+    <div class="live" v-if="activeIndex === 2">
+      <div class="card" v-for="item in liveList">
         <div class="top">
           <div class="avatar">
-            <img src="../../assets/images/b_pic_statue.jpg" alt="">
+            <img :src="item.storeCover" alt="">
           </div>
           <div class="info">
-            <p class="p1">店铺名称AAA</p>
-            <p class="p2">广东广州</p>
+            <p class="p1">{{item.title}}</p>
+            <p class="p2">{{item.storeAddress}}</p>
+          </div>
+          <div class="btn" @click="goLiveDetail(item.liveShowId)">
+            进入直播
           </div>
         </div>
-        <p style="overflow: hidden">
-          <span class="sp1">#2020最美春天</span>
-          <span class="sp2">了解详情</span>
-        </p>
         <div class="liveImg">
-          <img src="../../assets/images/b_pic_statue.jpg" alt="">
-          <img src="../../assets/images/b_pic_statue.jpg" alt="">
-          <img src="../../assets/images/b_pic_statue.jpg" alt="">
-        </div>
-        <div class="option">
-          <div class="item">
-            <img src="../../assets/images/share.png" alt="">10086</div>
-          <div class="item">
-            <img src="../../assets/images/share.png" alt="">10086</div>
-          <div class="item">
-            <img src="../../assets/images/share.png" alt="">10086</div>
+          <van-image fit='cover' :src="imgSrc" v-for="imgSrc in item.coverList" radius="0.16rem">
+            <template v-slot:loading>
+              <van-loading type="spinner" size="20" />
+            </template>
+          </van-image>
         </div>
       </div>
     </div>
-<!--    故事-->
+<!--    故事  -->
     <div class="story" v-if="activeIndex === 3">
-      <div class="list mgt20">
-        <div class="card" v-for="i in 3">
-          <img src="../../assets/images/b_pic_statue.jpg" alt="">
-          <p>故事名字故事名字故事名字</p>
+      <div class="list">
+        <div class="card" v-for="(item, index) in storyData" :key='index'>
+          <img :src="item.caseStoryThumbnail" alt="">
+          <p>{{item.caseStoryName}}</p>
           <div class="shop">
-            <img src="../../assets/images/b_pic_statue.jpg" alt="" class="shopImg">
-            <span class="shopName">店铺名称AAA</span>
+            <img :src="item.storeCover" alt="" class="shopImg">
+            <span class="shopName">{{item.storeName}}</span>
           </div>
         </div>
       </div>
@@ -145,7 +127,8 @@
 
 <script>
   import {findLiveListBySearch, findLiveDetailById} from '@/services/square.js'
-  import {findWithStatus} from '@/services/contest.js'
+  import { findByStatus } from '@/services/caseStory.js'
+  import { findWithStatus } from '@/services/contest.js'
   export default {
     data() {
       return {
@@ -153,10 +136,15 @@
         list: ['热门', '大赛', '直播', '故事'],
         activeIndex: 1,
         liveList:[],
+        // 比赛
         contestPage: 1,
+        // 故事
+        storyPage: 1,
         size: 10,
         // 比赛数据
         contestData: [],
+        // 故事数据
+        storyData: [],
         contestLoading: false,
         contestFinished: false,
         contestRefresh: false
@@ -214,26 +202,32 @@
       // 下拉刷新比赛数据
       onRefreshContest() {
         this.findContestData()
+      },
+      // 获取故事数据
+      findStoryData() {
+        findByStatus({
+          pageable: {page: this.storyPage, size: this.size, sort: {desc: ['id']}}
+        }, res => {
+          this.storyData = res
+        })
       }
+      // 获取热门栏目数据
+
     },
-    mounted() {
-      let param = {
-        "pageable": {
-          "page": 1,
-          "size": 10,
-          "sort": {
-            "desc": [
-              "id"
-            ]
-          }
-        },
-        "title": ""
-      }
-      findLiveListBySearch(param, res=>{
+    created() {
+      // 获取直播数据
+      findLiveListBySearch({
+        pageable: {page: this.page, size: this.size, sort: {desc: ['id']}},
+        title: ''
+      }, res=>{
         this.liveList = res
       })
       // 获取比赛数据
       this.findContestData()
+      // 获取故事数据
+      this.findStoryData()
+      // 获取热门栏目数据
+      this.getHotData()
     },
     filters: {
       updateStartAt(val) {
@@ -385,9 +379,8 @@
     }
 
     .game {
-      /*margin-top: 0.4rem;*/
-      padding-top: 2.5rem;
       margin-bottom: 1.96rem;
+      padding-top: 3.2rem;
       .card {
         width: 100%;
         background: rgba(255, 255, 255, 1);
@@ -506,23 +499,16 @@
         }
       }
     }
-
     .live {
-      width: 100%;
-      padding-top: 3.5rem;
-      margin-bottom: 2.5rem;
-      /*height: 8.2rem;*/
-
+      margin-bottom: 1.96rem;
+      padding-top: 3rem;
       .card {
         background-color: white;
         padding: 0.6rem;
         box-sizing: border-box;
         border-bottom: 1px solid rgba(230,230,230,1);
-
         .top {
           width: 100%;
-          /*height: 2.24rem;*/
-          /*background-color: #999999;*/
           overflow: hidden;
           .avatar {
             width: 1.24rem;
@@ -530,7 +516,6 @@
             border-radius: 50%;
             margin-top: 0.44rem;
             float: left;
-
             img {
               width: 100%;
               height: 100%;
@@ -599,14 +584,15 @@
           display: flex;
           justify-content: space-between;
           margin-top: 0.36rem;
-
-          .van-image{
-            width: 4.4rem;
+          .van-image {
+            flex: 0 0 33.33%;
+            width: 33.33%;
             height: 4.4rem;
-            img {
-              width: 4.4rem;
-              height: 4.4rem;
-            }
+          }
+          img {
+            flex: 0 0 33.33%;
+            width: 33.33%;
+            height: 4.4rem;
           }
         }
 
@@ -632,9 +618,9 @@
         }
       }
     }
-
     .story {
-      padding-top: 2.5rem;
+      margin-bottom: 1.96rem;
+      padding-top: 3rem;
       .list {
         display: flex;
         justify-content: space-between;

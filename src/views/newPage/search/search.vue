@@ -2,16 +2,23 @@
   <div class="searchResult">
     <div class="top">
       <img src="../../../assets/images/fanhui-1.png" alt="" @click="goBack">
-      <van-search v-model="template.name" placeholder="搜索想要的商品" @search="getResult"/>
+      <van-search v-model="template.name" placeholder="搜索想要的商品" shape="round" @search="getResult"/>
     </div>
     <van-tabs v-if="isSearched" v-model="active">
       <van-tab title="模板">
-        <div class="templateList">
-          <div class="item" v-for="i in 9">
-            <img src="../../../assets/images/ceshi.jpg" alt="">
-            <p>闺蜜时光</p>
+        <van-list
+          v-model="loading"
+          :finished="finished"
+          finished-text="已经到底了~"
+          @load="searchAction"
+        >
+          <div class="temp-wrap">
+            <div class="temp-item" v-for="item in tempResult" :key="item.id" @click="viewTemplate(item.id)">
+              <div class="temp-img"><img :src="item.cover ? item.cover : undefined" alt=""></div>
+              <div class="temp-title">{{item.name}}</div>
+            </div>
           </div>
-        </div>
+        </van-list>
       </van-tab>
       <van-tab title="店铺">
         <div class="shopShow" v-for="i in storeResult">
@@ -64,7 +71,7 @@
     data() {
       return {
         value: '',
-        active: 0,
+        active: 1,
         isSearched:false,
         hotSearch:[],
         historySearch:[],
@@ -72,7 +79,7 @@
         storeResult:'',
         pageable:{
           page:1,
-          size:10,
+          size:9,
           sort:{
             desc:['id']
           }
@@ -80,12 +87,24 @@
         template:{
           name:'',
           status:'已启用'
-        }
+        },
+        //懒加载
+        loading: false,
+        finished: false,
+        hasSearch: false,
+        page: 0
+      }
+    },
+    watch: {
+      active(val) {
+        console.log(val)
+        this.searchAction();
       }
     },
     methods: {
       toDelete() {
-
+        localStorage.removeItem('history');
+        this.historySearch = [];
       },
       goBack() {
         if(this.isSearched) {
@@ -96,22 +115,60 @@
       },
       onSubmit() {
       },
-      getResult() {
-        this.isSearched = true
-        this.historySearch.push(this.template.name)
-        localStorage.setItem('history',JSON.stringify(this.historySearch));
-        console.log(this.historySearch);
-        searchTemplate({
+      searchAction() {        //发起搜索请求
+        if(this.active === 0) {
+          this.page += 1;
+          let param =  {
+            "template": {
+              "name": this.template.name
+            },
+            "pageable": {
+              "page": this.page,
+              "size": 9,
+              "sort": {
+                "desc": [
+                  "id"
+                ]
+              }
+            }
+          };
+          searchTemplate(param, res => {
+            this.tempResult = this.tempResult.length === 0 ? this.tempResult = res : this.tempResult.concat(res);
+
+            this.loading = false;
+            if(res.length < 9) {
+              this.finished = true;
+            }
+          })
+        } else {
+          findByKeyWord({
             pageable:this.pageable,
-          template:this.template
-        },res => {
-          this.tempResult = res
-        })
-        findByKeyWord({
-          pageable:this.pageable,
-          keyWord:this.template.name
-        },res => {
-          this.storeResult = res
+            keyWord:this.template.name
+          },res => {
+            this.storeResult = res
+          })
+        }
+      },
+      getResult() {
+        this.tempResult = [];
+        this.page = 0;
+        this.finished = false;
+        this.isSearched = true;
+        if(this.historySearch.length < 10) {
+          this.historySearch.push(this.template.name)
+        } else {
+          this.historySearch.shift();
+          this.historySearch.push(this.template.name);
+        }
+        localStorage.setItem('history',JSON.stringify(this.historySearch));
+        this.searchAction();
+      },
+      viewTemplate(tempId) {
+        this.$router.push({
+          name: 'tempDetail',
+          query: {
+            tempId: tempId
+          }
         })
       }
     },
@@ -119,7 +176,7 @@
 
     },
     created() {
-      this.historySearch = JSON.parse(localStorage.getItem('history'));
+      this.historySearch = JSON.parse(localStorage.getItem('history')) ? JSON.parse(localStorage.getItem('history')) : [];
       search({
         article:{
           category:'热门搜索'
@@ -182,13 +239,38 @@
       }
     }
 
+    .temp-wrap {
+      text-align: center;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: flex-start;
+      .temp-item {
+        flex: 0 0 33.33%;
+        margin: 0.3rem 0 0.3rem;
+        width: 33.33%;
+        .temp-img {
+          img {
+            width: 4.2rem;
+            height: 5.36rem;
+            object-fit: contain;
+          }
+        }
+        .temp-title {
+          text-align: center;
+          font-size:0.52rem;
+          font-weight:bold;
+          color:rgba(51,51,51,1);
+        }
+      }
+    }
+
     .templateList {
       display: flex;
-      justify-content: space-around;
       flex-wrap: wrap;
-
+      text-align: center;
       .item {
-        width: 4.2rem;
+        flex: 0 0 33.33%;
+        width: 33.33%;
         margin-top: 0.4rem;
 
         img {

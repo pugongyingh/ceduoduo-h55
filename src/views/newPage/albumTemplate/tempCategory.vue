@@ -15,7 +15,7 @@
 </template>
 
 <script>
-  import {search} from '@/services/templateCategory'
+  import {searchTemplateCategory} from '@/services/templateCategory'
 
   export default {
 		name: "tempCategory",
@@ -44,7 +44,7 @@
             }
           }
         };
-        search(tempParam, res => {
+        searchTemplateCategory(tempParam, res => {
           this.categoryList = res;
         });
       },
