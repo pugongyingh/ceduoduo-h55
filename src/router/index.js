@@ -723,14 +723,6 @@ const routes = [
       title:'game'
     },
     component:() => import('@/views/newPage/personal/alliance/management')
-  },
-  {
-    name:'recommendedWorks',
-    path:'/recommendedWorks/:id',
-    meta:{
-      title:'recommendedWorks'
-    },
-    component:() => import('@/views/newPage/recommendedWorks')
   }
 ]
 
